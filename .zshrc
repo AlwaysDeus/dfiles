@@ -64,15 +64,6 @@ alias dytMusic="yt-dlp -x --audio-quality 0 -o '%(playlist)s/%(playlist_index)s 
 alias kt="kitty -o font_size=16"
 alias xt="xterm -fg white -bg black -fa 'fira-code' -fs 10"
 #}}}
-## git {{{
-alias g="git"
-alias gc="git clone"
-
-alias dff="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
-alias dffa="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add"
-alias dffc="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m"
-alias dffp="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME push origin main"
-#}}}
 ## mounting {{{
 alias amnt="aft-mtp-mount ~/mnt"
 alias aumount="fusermount -u ~/mnt"
@@ -90,6 +81,15 @@ alias searx="sudo podman run --rm \
 ## network {{{
 alias sss="sudo ss -tuanp"
 #alias fw="sudo firewall-cmd"
+#}}}
+## git {{{
+alias g="git"
+alias gc="git clone"
+
+alias dff="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
+alias dffa="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add"
+alias dffc="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m"
+alias dffp="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME push origin arch"
 #}}}
 #}}}
 #VI MODE {{{

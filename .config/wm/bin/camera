@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# camera on ="$(sudo modprobe uvcvideo)"
+# file /dev/video0
+# /dev/video0: character special (81/0)
+#
+# camera off="$(sudo modprobe -r uvcvideo)"
+# file /dev/video0
+# /dev/video0: cannot open `/dev/video0' (No such file or directory)
+
+#echo "$state"
+
+state="$(file /dev/video0 | grep special | awk '{print $3}')"
+
+if [ "$state" == "special" ]
+then
+    icon="📸"
+    echo "$icon"
+else
+        echo 📷 && exit
+fi

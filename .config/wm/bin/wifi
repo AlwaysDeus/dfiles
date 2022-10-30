@@ -1,0 +1,15 @@
+#!/bin/bash
+
+state="$(iwctl station wlan0 show | grep State | awk '{print $2}')"
+ssid="$(iwctl station wlan0 show | grep 'Connected network' | awk '{print $3}')"
+ip="$(iwctl station wlan0 show | grep 'IPv4 address' | awk '{print $3}'|awk -F '.' '{print $4}')"
+ip_full="$(iwctl station wlan0 show | grep 'IPv4 address' | awk '{print $3}')"
+#echo $state
+#echo $ssid
+
+if [ "$state" == "connected" ]; then
+    icon="📶"
+    printf "$icon $ssid ($ip)"
+else
+    echo 📡 && exit
+fi

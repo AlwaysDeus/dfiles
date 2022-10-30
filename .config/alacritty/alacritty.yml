@@ -1,0 +1,80 @@
+env:
+  TERM: xterm-256color
+
+window:
+
+  padding:
+    x: 16
+    y: 10
+
+  dynamic_padding: false
+
+  title: Alacritty
+
+  class:
+    # Application instance name
+    instance: Alacritty
+    # General application class
+    general: Alacritty
+
+scrolling:
+  # Maximum number of lines in the scrollback buffer.
+  # Specifying '0' will disable scrolling.
+  history: 5000
+
+font:
+  normal:
+    family: JetBrains Mono
+    style: Regular
+  bold:
+    family: JetBrains Mono
+    style: Bold
+  italic:
+    family: JetBrains Mono
+    style: Italic
+  bold_italic:
+    family: JetBrains Mono
+    style: Bold Italic
+
+  size: 10.0
+
+  offset:
+    x: 0
+    y: 1
+
+draw_bold_text_with_bright_colors: true
+
+schemes:
+  PurPl3: &PurPl3
+    primary:
+      background: '#0c0a20'
+      foreground: '#f2f3f7'
+    cursor:
+      text: CellBackground
+      cursor: '#528bff'
+    selection:
+      text: CellForeground
+      background: '#3e4451'
+    normal:
+      black:   '#1c1f24'
+      red:     '#e61f44'
+      green:   '#a7da1e'
+      yellow:  '#da8548'
+      blue:    '#1ea8fc'
+      magenta: '#ff2afc'
+      cyan:    '#42c6ff'
+      white:   '#202328'
+
+colors: *PurPl3
+
+window.opacity: 1.0
+
+key_bindings:
+  - { key: V,         mods: Alt,          action: Paste                       }
+  - { key: C,         mods: Alt,          action: Copy                        }
+  - { key: Equals,    mods: Control,       action: IncreaseFontSize            }
+  - { key: Plus,      mods: Control,       action: IncreaseFontSize            }
+  - { key: L,         mods: Control,       action: ClearLogNotice              }
+  - { key: L,         mods: Control,       chars: "\x0c"                       }
+  - { key: K,         mods: Alt,          action: ScrollPageUp,   mode: ~Alt  }
+  - { key: J,         mods: Alt,          action: ScrollPageDown, mode: ~Alt  }

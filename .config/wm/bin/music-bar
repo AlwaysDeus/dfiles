@@ -1,0 +1,26 @@
+#!/bin/bash
+
+state="$(mocp -i | grep State)"
+artist="$(mocp -i | grep File | awk -F '/' '{print $5}')"
+#song="$(mocp -i | grep File | awk -F '/' '{print $7}' | awk '(NF=NF-1) 1')"
+song="$(mocp -i | grep File | awk -F '/' '{print $7}' | awk -F '.' '{print $1}')"
+#echo $state
+#echo $song
+#"echo $artist"
+
+# Different artists in one folder, can't delete them like in normal albums
+if [ "$artist" == "slowed reverb" ]; then
+    #artist="$(mocp -i | grep File | awk -F '/' '{print $6}' | awk -F "-" '{print $1}')"
+    artist="$(mocp -i | grep File | awk -F '/' '{print $6}' | sed 's/.-.*//')"
+    song="$(mocp -i | grep File | awk -F '/' '{print $6}' | sed 's/.*.- //' | awk -F '.' '{print $1}')"
+fi
+
+if [ "$state" == "State: PLAY" ]; then
+    icon="▶"
+    echo "$icon $artist - $song"
+elif [ "$state" == 'State: PAUSE' ]; then
+    icon="⏸"
+    echo "$icon $artist - $song"
+else
+        echo 🦗 && exit
+fi

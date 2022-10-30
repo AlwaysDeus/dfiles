@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+layout="$(setxkbmap -query | grep variant | awk '{print $2}')"
+mods="$(setxkbmap -query | grep options | awk '{print $2}')"
+language="$(setxkbmap -query | grep layout | awk '{print $2}')"
+
+case $layout in
+    "colemak_dh_ansi") status="🎹" ;;
+    "") status="" ;;
+esac
+
+case $mods in
+    "caps:super,altwin:menu_win") status2="" ;;
+    "") status2="X" ;;
+esac
+
+printf "%s %s %s" "$language" "$status" "$status2"

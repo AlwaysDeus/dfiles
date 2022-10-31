@@ -4,6 +4,12 @@ Plug 'nfnty/vim-nftables'       " syntax for nftables
 Plug 'wadackel/vim-dogrun'      " nvim dogrun theme
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'nvim-orgmode/orgmode'     " emacs orgmode
+" Git integration
+Plug 'mhinz/vim-signify'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
+Plug 'junegunn/gv.vim'
+
 call plug#end()
 "}}}
 "SET{{{
@@ -72,3 +78,5 @@ require('orgmode').setup({
 })
 EOF
 "}}}
+
+source $HOME/.config/nvim/plug-config/signify.vim

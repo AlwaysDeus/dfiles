@@ -83,6 +83,7 @@ alias sss="sudo ss -tuanp"
 #alias fw="sudo firewall-cmd"
 #}}}
 ## git {{{
+alias n="GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME nvim"
 alias g="git"
 alias gc="git clone"
 

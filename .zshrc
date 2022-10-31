@@ -89,8 +89,8 @@ alias gc="git clone"
 
 alias dff="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
 alias dffa="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add"
-alias dffc="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m"
-alias dffp="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME push origin arch"
+alias dffc="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit --patch"
+alias dffp="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME push origin"
 #}}}
 #}}}
 #VI MODE {{{

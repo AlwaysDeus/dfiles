@@ -39,6 +39,7 @@ static const char *const autostart[] = {
     "picom", NULL,
     "flameshot", NULL,
     "redshift", NULL,
+    "emacs", "--daemon", NULL,
 	NULL /* terminate */
 };
 
@@ -116,13 +117,13 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Return, togglescratch,  {.v = scratchpadcmd } },
 	//{ MODKEY,                       XK_s,      togglescratch,  SHCMD("firefox") },
 
-    { MODKEY,                       XK_w,      spawn,          SHCMD("firejail firefox") },
-    { MODKEY|ShiftMask,             XK_w,      spawn,          SHCMD("firejail librewolf") },
-    { MODKEY,                       XK_t,      spawn,          SHCMD("qutebrowser") },
-    { MODKEY|ShiftMask,             XK_t,      spawn,          SHCMD("google-chrome-stable") },
+    { MODKEY,                       XK_w,      spawn,          SHCMD("firejail firefox-bin") },
+    //{ MODKEY|ShiftMask,             XK_w,      spawn,          SHCMD("firejail librewolf") },
+    //{ MODKEY,                       XK_t,      spawn,          SHCMD("qutebrowser") },
+    //{ MODKEY|ShiftMask,             XK_t,      spawn,          SHCMD("google-chrome-stable") },
 
-    { MODKEY,                       XK_e,      spawn,          SHCMD("emacsclient -c") },
-    { MODKEY|ShiftMask,             XK_e,      spawn,          SHCMD("emacs") },
+    { MODKEY,                       XK_t,      spawn,          SHCMD("emacsclient -c") },
+    { MODKEY|ShiftMask,             XK_t,      spawn,          SHCMD("emacs") },
 
 	//{ MODKEY,		                XK_m,	   spawn,		   SHCMD("dbus-run-session flatpak run com.sindresorhus.Caprine") },
 	//{ MODKEY|ShiftMask,             XK_m,	   spawn,		   SHCMD("dbus-run-session flatpak run com.discordapp.Discord") },
@@ -135,7 +136,7 @@ static Key keys[] = {
 	{ MODKEY,		                XK_v,	   spawn,		   SHCMD("virt-manager") },
 	{ MODKEY|ShiftMask,		        XK_v,	   spawn,		   SHCMD("firejail virtualbox") },
 
-	{ MODKEY,		                XK_n,	   spawn,		   SHCMD("alacritty -e newsboat") },
+	{ MODKEY,		                XK_k,	   spawn,		   SHCMD("alacritty -e newsboat") },
 
 	{ MODKEY,			            XK_F11,	   spawn,          SHCMD("/home/vamp/.config/wm/bin/keylay-on; kill -43 $(pidof dwmblocks)") },
 	{ MODKEY|ShiftMask,			    XK_F11,	   spawn,          SHCMD("/home/vamp/.config/wm/bin/keylay-off && /home/vamp/.config/wm/bin/keyss; kill -43 $(pidof dwmblocks)") },
@@ -147,30 +148,58 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_q,      killclient,     {0} },
 
 	{ MODKEY,                       XK_space,  togglefloating, {0} },
+
+    //-----------------------------------COLEMAK-DH----------------------------------------
     // Change focus window
-	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+	{ MODKEY,                       XK_n,      focusstack,     {.i = +1 } },
+	{ MODKEY,                       XK_e,      focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_l,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_h,      focusstack,     {.i = -1 } },
     // Change grid
-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_i,      incnmaster,     {.i = -1 } },
+	{ MODKEY,                       XK_u,      incnmaster,     {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_u,      incnmaster,     {.i = -1 } },
     // Resize window
 	{ MODKEY|ShiftMask,             XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY|ShiftMask,             XK_l,      setmfact,       {.f = +0.05} },
     // Move window Master/Slave
-	{ MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
+	{ MODKEY|ShiftMask,             XK_n,      movestack,      {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_e,      movestack,      {.i = -1 } },
     // Move floating window
-	{ ControlMask|ShiftMask,        XK_j,      moveresize,     {.v = "0x 25y 0w 0h" } },
-	{ ControlMask|ShiftMask,        XK_k,      moveresize,     {.v = "0x -25y 0w 0h" } },
+	{ ControlMask|ShiftMask,        XK_n,      moveresize,     {.v = "0x 25y 0w 0h" } },
+	{ ControlMask|ShiftMask,        XK_e,      moveresize,     {.v = "0x -25y 0w 0h" } },
 	{ ControlMask|ShiftMask,        XK_l,      moveresize,     {.v = "25x 0y 0w 0h" } },
 	{ ControlMask|ShiftMask,        XK_h,      moveresize,     {.v = "-25x 0y 0w 0h" } },
     // Resize flating window
-	{ MODKEY|ControlMask|ShiftMask, XK_j,      moveresize,     {.v = "0x 0y 0w 25h" } },
-	{ MODKEY|ControlMask|ShiftMask, XK_k,      moveresize,     {.v = "0x 0y 0w -25h" } },
+	{ MODKEY|ControlMask|ShiftMask, XK_n,      moveresize,     {.v = "0x 0y 0w 25h" } },
+	{ MODKEY|ControlMask|ShiftMask, XK_e,      moveresize,     {.v = "0x 0y 0w -25h" } },
 	{ MODKEY|ControlMask|ShiftMask, XK_l,      moveresize,     {.v = "0x 0y 25w 0h" } },
 	{ MODKEY|ControlMask|ShiftMask, XK_h,      moveresize,     {.v = "0x 0y -25w 0h" } },
+
+    //-----------------------------------QWERTY-------------------------------------------
+    //// Change focus window
+	//{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
+	//{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+	//{ MODKEY,                       XK_l,      focusstack,     {.i = +1 } },
+	//{ MODKEY,                       XK_h,      focusstack,     {.i = -1 } },
+    //// Change grid
+	//{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
+	//{ MODKEY|ShiftMask,             XK_i,      incnmaster,     {.i = -1 } },
+    //// Resize window
+	//{ MODKEY|ShiftMask,             XK_h,      setmfact,       {.f = -0.05} },
+	//{ MODKEY|ShiftMask,             XK_l,      setmfact,       {.f = +0.05} },
+    //// Move window Master/Slave
+	//{ MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
+	//{ MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
+    //// Move floating window
+	//{ ControlMask|ShiftMask,        XK_j,      moveresize,     {.v = "0x 25y 0w 0h" } },
+	//{ ControlMask|ShiftMask,        XK_k,      moveresize,     {.v = "0x -25y 0w 0h" } },
+	//{ ControlMask|ShiftMask,        XK_l,      moveresize,     {.v = "25x 0y 0w 0h" } },
+	//{ ControlMask|ShiftMask,        XK_h,      moveresize,     {.v = "-25x 0y 0w 0h" } },
+    //// Resize flating window
+	//{ MODKEY|ControlMask|ShiftMask, XK_j,      moveresize,     {.v = "0x 0y 0w 25h" } },
+	//{ MODKEY|ControlMask|ShiftMask, XK_k,      moveresize,     {.v = "0x 0y 0w -25h" } },
+	//{ MODKEY|ControlMask|ShiftMask, XK_l,      moveresize,     {.v = "0x 0y 25w 0h" } },
+	//{ MODKEY|ControlMask|ShiftMask, XK_h,      moveresize,     {.v = "0x 0y -25w 0h" } },
 
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)

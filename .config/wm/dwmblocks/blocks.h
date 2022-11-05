@@ -1,19 +1,21 @@
 //Modify this file to change what commands output to your statusbar, and recompile using the make command.
 static const Block blocks[] = {
 	/*Icon*/	/*Command*/		              /*Update Interval*/	/*Update Signal*/
-    {"",    "/home/vamp/.config/wm/bin/camera",     6000,   8},
+    {"",    "$HOME/.config/wm/bin/camera",          6000,   8},
 
-    {"",    "/home/vamp/.config/wm/bin/wifi",       10,     7},
+    {"",    "$HOME/.config/wm/bin/progress-bar",    60,   10},
 
-    {"",    "/home/vamp/.config/wm/bin/music-bar",  10,     6},
+    {"",    "$HOME/.config/wm/bin/wifi",            10,     7},
 
-    {"💡",	"light | awk -F '.' '{print $1}'",	    0,      2},
+    {"",    "$HOME/.config/wm/bin/music-bar",       10,     6},
 
-    {"",	"/home/vamp/.config/wm/bin/battery",    60,     3},
+    {"💡",	"light | awk -F '.' '{print $1}'",      0,      2},
 
-    {"",    "/home/vamp/.config/wm/bin/keylay-bar", 0,      9},
+    {"",	"$HOME/.config/wm/bin/battery",         60,     3},
 
-	{"",	"/home/vamp/.config/wm/bin/volume",	    0,      4},
+    {"",    "$HOME/.config/wm/bin/keylay-bar",      0,      9},
+
+	{"",	"$HOME/.config/wm/bin/volume",	        0,      4},
 
 	{"",    "date '+%b %d (%a) %I:%M%p'",			60,     0},
 
@@ -25,3 +27,4 @@ static const Block blocks[] = {
 //sets delimeter between status commands. NULL character ('\0') means no delimeter.
 static char delim[] = " | ";
 static unsigned int delimLen = 5;
+

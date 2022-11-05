@@ -38,9 +38,26 @@ set showmatch
 set hlsearch
 "}}}
 "KEYMAPS {{{
-imap jj <Esc>
-imap jk <Esc>
-imap kk <Esc>:w<Enter>a
+"imap jj <Esc>
+"imap jk <Esc>
+"imap kk <Esc>:w<Enter>a
+
+"COlEMAK {{{
+" colemak
+"imap tn <ESC>
+"vmap tn <ESC>
+"
+"noremap n j
+"noremap N J
+"noremap e k
+"noremap E K
+"
+"noremap k n
+"noremap K N
+"
+"noremap j e
+"noremap J E
+"}}}
 "}}}
 " Automatically deletes all trailing whitespace and newlines at end of file on save. & reset cursor position {{{
  	autocmd BufWritePre * let currPos = getpos(".")

@@ -3,6 +3,11 @@ autoload -U colors && colors #{{{
 PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[red]%}]%{$reset_color%}$%b "
 #}}}
 
+#GENTOO PROMPT
+#autoload -U compinit promptinit
+#compinit
+#promptinit; prompt gentoo
+
 export SUDO_EDITOR=nvim
 setopt correctall
 # HISTORY{{{
@@ -48,10 +53,10 @@ alias vv="vim"
 alias e="emacsclient -nw"
 #}}}
 ## packages {{{
-#alias e="sudo emerge"
-#alias eu="sudo emaint --auto sync && sudo emerge --ask --verbose --update --deep --newuse @world"
-alias pac="sudo pacman -Syu --disable-download-timeout"
-alias p="sudo pacman -S --disable-download-timeout"
+alias p="sudo emerge"
+alias pac="sudo emerge --ask --verbose --update --deep --newuse @world"
+#alias pac="sudo pacman -Syu --disable-download-timeout"
+#alias p="sudo pacman -S --disable-download-timeout"
 #}}}
 ## youtube {{{
 alias mpv720='mpv --ytdl-format="bestvideo[height<=?720][vcodec!=?vp9]+bestaudio/best"'
@@ -83,14 +88,14 @@ alias sss="sudo ss -tuanp"
 #alias fw="sudo firewall-cmd"
 #}}}
 ## git {{{
-alias n="GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME nvim"
+alias n="GIT_DIR=$HOME/.dfiles GIT_WORK_TREE=$HOME nvim"
 alias g="git"
 alias gc="git clone"
 
-alias dff="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
-alias dffa="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add"
-alias dffc="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit --patch"
-alias dffp="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME push origin"
+alias dff="/usr/bin/git --git-dir=$HOME/.dfiles/ --work-tree=$HOME"
+alias dffa="/usr/bin/git --git-dir=$HOME/.dfiles/ --work-tree=$HOME add"
+alias dffc="/usr/bin/git --git-dir=$HOME/.dfiles/ --work-tree=$HOME commit --patch"
+alias dffp="/usr/bin/git --git-dir=$HOME/.dfiles/ --work-tree=$HOME push origin"
 #}}}
 #}}}
 #VI MODE {{{
@@ -118,17 +123,6 @@ _fix_cursor() { #{{{
 }
 
 precmd_functions+=(_fix_cursor)
-#}}}
-# Use lf to switch directories and bind it to ctrl-o {{{
-lfcd () {
-    tmp="$(mktemp)"
-    lf -last-dir-path="$tmp" "$@"
-    if [ -f "$tmp" ]; then
-        dir="$(cat "$tmp")"
-        rm -f "$tmp" >/dev/null
-        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
-    fi
-}
 #}}}
 # Use ranger to switch directories and bind it to ctrl-o {{{
 rangercd () {
@@ -168,12 +162,8 @@ bindkey -s '^f' 'cd "$(dirname "$(fzf)")"\n'
 #bindkey -s '^o' 'lfcd\n'
 bindkey -s '^o' 'rangercd\n'
 #}}}
-# Load syntax highlighting and zsh-autocomplete; {{{
-# if on arch linux and installed via pacman
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-#source /home/$(whoami)/PC/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
-# source /home/user/slatt/conf/all1/.config/zsh/plugins/git/git.plugin.zsh
-# source /home/user/slatt/os/configs/zsh/plugins/zsh-autocomplete/zsh-autocomplete.plugin.zsh 2>/dev/null
+# Load syntax highlighting {{{
+source $HOME/.config/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
 #}}}
 # Git{{{
 autoload -Uz vcs_info

@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 
 ## All keybords
-#setxkbmap -layout pl,pl -variant ,colemak_dh
+setxkbmap -layout pl -variant colemak_dh_ansi
 
 ## Set keyboard layout only for GENESIS keyboard without changing LENOVO
-setxkbmap -layout pl -variant colemak_dh_ansi -device \
-    "$(xinput -list | grep 'SINO WEALTH Mechanical Keyboard' | awk '{print $6}' | sed 's/id=//g' | grep ^..$ | head --lines 1)" \
-    & \
-    setxkbmap -layout pl -variant qwerty -device \
-    "$(xinput -list | grep 'AT Translated Set 2 keyboard' | awk '{print $7}' | sed 's/id=//g')"
-    
-
+#setxkbmap -layout pl -variant colemak_dh_ansi -device \
+#    "$(xinput -list | grep 'SINO WEALTH Mechanical Keyboard' | awk '{print $6}' | sed 's/id=//g' | grep ^..$ | head --lines 1)" \
+#    & \
+#    setxkbmap -layout pl -variant qwerty -device \
+#    "$(xinput -list | grep 'AT Translated Set 2 keyboard' | awk '{print $7}' | sed 's/id=//g')"

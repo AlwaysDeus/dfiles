@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-packages="$( sudo genlop -c | grep ETA | sed 's/ETA://'| sed 's/\.$//' )"
-#files="$( sudo progress )"
-emerge="$( ps a | grep 'sudo emerge' | awk '{print $5,$6}' | grep 'sudo emerge' )"
-
-if [ "$emerge"  == "sudo emerge" ]; then
-    echo $packages
-fi
+#packages="$( sudo genlop -c | grep ETA | sed 's/ETA://'| sed 's/\.$//' )"
+##files="$( sudo progress )"
+#emerge="$( ps a | grep 'sudo emerge' | awk '{print $5,$6}' | grep 'sudo emerge' )"
+#
+#if [ "$emerge"  == "sudo emerge" ]; then
+#    echo $packages
+#fi

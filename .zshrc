@@ -57,6 +57,8 @@ alias p="sudo emerge"
 alias pac="sudo emerge --ask --verbose --update --deep --newuse @world"
 #alias pac="sudo pacman -Syu --disable-download-timeout"
 #alias p="sudo pacman -S --disable-download-timeout"
+alias flats="flatpak search --columns=application"
+alias flatp="flatpak install --user"
 #}}}
 ## youtube {{{
 alias mpv720='mpv --ytdl-format="bestvideo[height<=?720][vcodec!=?vp9]+bestaudio/best"'

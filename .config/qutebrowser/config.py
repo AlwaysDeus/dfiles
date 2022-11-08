@@ -2,11 +2,6 @@ config.load_autoconfig(False)
 
 
 ## Colorscheme
-## Dark mode
-config.set("colors.webpage.preferred_color_scheme", "dark")
-config.set("colors.webpage.darkmode.policy.images", "never")
-config.set("colors.webpage.darkmode.enabled", True)
-## Dracula colorscheme
 import dracula.draw
 # Load existing settings made via :set
 config.load_autoconfig()
@@ -16,6 +11,11 @@ dracula.draw.blood(c, {
         'horizontal': 8
     }
 })
+
+## Dark mode
+config.set("colors.webpage.preferred_color_scheme", "dark")
+config.set("colors.webpage.darkmode.policy.images", "never")
+config.set("colors.webpage.darkmode.enabled", True)
 
 ## Statusbar
 config.set('statusbar.show', 'in-mode')

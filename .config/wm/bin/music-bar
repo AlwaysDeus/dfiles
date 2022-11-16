@@ -19,5 +19,5 @@ elif [ "$state" == 'State: PAUSE' ]; then
     icon="⏸"
     echo "$icon $artist - $song"
 else
-        echo 🦗 && exit
+    exit
 fi

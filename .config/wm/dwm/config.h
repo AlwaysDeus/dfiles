@@ -39,7 +39,7 @@ static const char *const autostart[] = {
     "picom", NULL,
     "flameshot", NULL,
     "redshift", NULL,
-    "emacs", "--daemon", NULL,
+    //"emacs", "--daemon", NULL,
 	NULL /* terminate */
 };
 
@@ -117,9 +117,9 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Return, togglescratch,  {.v = scratchpadcmd } },
 	//{ MODKEY,                       XK_s,      togglescratch,  SHCMD("firefox") },
 
-    { MODKEY,                       XK_w,      spawn,          SHCMD("firejail firefox-bin") },
+    { MODKEY,                       XK_w,      spawn,          SHCMD("firefox-bin") },
     //{ MODKEY|ShiftMask,             XK_w,      spawn,          SHCMD("firejail librewolf") },
-    //{ MODKEY,                       XK_t,      spawn,          SHCMD("qutebrowser") },
+    { MODKEY|ShiftMask,             XK_w,      spawn,          SHCMD("qutebrowser") },
     //{ MODKEY|ShiftMask,             XK_t,      spawn,          SHCMD("google-chrome-stable") },
 
     { MODKEY,                       XK_t,      spawn,          SHCMD("emacsclient -c") },
@@ -133,8 +133,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_f,      togglefullscr,  {0} },
 	{ MODKEY|ShiftMask,             XK_f,      togglebar,      {0} },
 
-	{ MODKEY,		                XK_v,	   spawn,		   SHCMD("virt-manager") },
-	{ MODKEY|ShiftMask,		        XK_v,	   spawn,		   SHCMD("firejail virtualbox") },
+	//{ MODKEY,		                XK_v,	   spawn,		   SHCMD("virt-manager") },
+	//{ MODKEY|ShiftMask,		        XK_v,	   spawn,		   SHCMD("firejail virtualbox") },
 
 	{ MODKEY,		                XK_k,	   spawn,		   SHCMD("alacritty -e newsboat") },
 

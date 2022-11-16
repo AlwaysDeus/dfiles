@@ -9,7 +9,7 @@ static const Block blocks[] = {
 
     {"",    "$HOME/.config/wm/bin/music-bar",       10,     6},
 
-    {"💡",	"light | awk -F '.' '{print $1}'",      0,      2},
+    {"",	"$HOME/.config/wm/bin/light-bar",      0,      2},
 
     {"",	"$HOME/.config/wm/bin/battery",         60,     3},
 

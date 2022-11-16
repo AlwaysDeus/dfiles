@@ -17,5 +17,5 @@ then
     icon="📸"
     echo "$icon"
 else
-        echo 📷 && exit
+    exit
 fi

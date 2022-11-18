@@ -5,23 +5,23 @@ vol="$(pactl list sinks | tr ' ' '\n' | grep -m1 '%' | tr -d '%')"
 mic="$(pactl list sources | grep 'Mute: yes' | awk '{print $2}')"
 
 case "$(pactl list sinks | grep Mute | awk '{print $2}')" in
-	"yes") vol="0" ;;
-	"") vol="$vol" ;;
+    "yes") vol="0" ;;
+    "") vol="$vol" ;;
 esac
 case "$(pactl list sources | grep 'Mute: yes' | awk '{print $2}')" in
-	"yes") mic="" ;;
-	"") mic="" ;;
+    "yes") mic= ;;
+    "") mic=" " ;;
 esac
 
 if [ "$vol" -gt "60" ]; then
-	icon="🔊"
-    printf "%s%s%% %s" "$icon" "$vol" "$mic"
+    icon="🔊"
+    printf "%s%s%%%s" "$icon" "$vol" "$mic"
 elif [ "$vol" -gt "30" ]; then
-	icon="🔉"
-    printf "%s%s%% %s" "$icon" "$vol" "$mic"
+    icon="🔉"
+    printf "%s%s%%%s" "$icon" "$vol" "$mic"
 elif [ "$vol" -gt "0" ]; then
-	icon="🔈"
-    printf "%s%s%% %s" "$icon" "$vol" "$mic"
+    icon="🔈"
+    printf "%s%s%%%s" "$icon" "$vol" "$mic"
 else
     echo 🔇 $mic && exit
 fi

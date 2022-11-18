@@ -64,8 +64,9 @@ alias flatp="flatpak install --user"
 alias mpv720='mpv --ytdl-format="bestvideo[height<=?720][vcodec!=?vp9]+bestaudio/best"'
 alias mpv1080='mpv --ytdl-format="bestvideo[height<=?1080][vcodec!=?vp9]+bestaudio/best"'
 alias mpvMusic="mpv --shuffle --no-video"
-alias yt="ytfzf --show-thumbnails -l -f "
 alias dytMusic="yt-dlp -x --audio-quality 0 -o '%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s'"
+alias yt="ytfzf --show-thumbnails -l -f "
+alias youtube="source $HOME/tools/yt-local/env/bin/activate && python $HOME/tools/yt-local/server.py"
 #}}}
 ## terminals {{{
 alias kt="kitty -o font_size=16"
@@ -99,7 +100,7 @@ alias dffa="/usr/bin/git --git-dir=$HOME/.dfiles/ --work-tree=$HOME add"
 alias dffc="/usr/bin/git --git-dir=$HOME/.dfiles/ --work-tree=$HOME commit --patch"
 alias dffp="/usr/bin/git --git-dir=$HOME/.dfiles/ --work-tree=$HOME push origin"
 #}}}
-# TOR {{{
+## TOR {{{
 alias curl="curl --socks5-hostname 127.0.0.1:9050"
 #}}}
 #}}}

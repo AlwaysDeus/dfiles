@@ -15,4 +15,8 @@ case $mods in
 esac
 
 #printf "%s %s %s" "$language" "$status" "$status2"
-printf "%s %s" "$language" "$status"
+if [ "$layout" = "" ]; then
+    exit
+else
+    printf "%s %s" "$language" "$status"
+fi

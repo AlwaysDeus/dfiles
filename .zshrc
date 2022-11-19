@@ -194,4 +194,4 @@ export LESS_TERMCAP_us=$'\E[01;32m'             # begin underline
 #export MANPAGER="/usr/bin/most -s"             # color using most
 #}}}
 
-export PATH=$PATH:/$HOME/.config/wm/bin
+export PATH=$PATH:/$HOME/.config/wm/bin:/$HOME/tools/scripts

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+p="$(light | awk -F '.' '{print $1}')"
+
+if [ "$p" == "100" ]; then
+    exit
+else
+    icon="💡"
+    printf "$icon $p"
+fi

@@ -143,10 +143,10 @@ static Key keys[] = {
 
     { MODKEY,                       XK_F12,	   spawn,          SHCMD("/home/vamp/.config/wm/bin/keyss") },
 
-    { MODKEY,                       XK_Insert, spawn,          SHCMD("xdotool type $(grep -v '^#' ~/.safe/bookmarks | dmenu -i -l 50 | cut -d' ' -f1)")
-    { MODKEY|ShiftMask,             XK_b,      spawn,          SHCMD("bookmarker")
+    { MODKEY,                       XK_Insert, spawn,          SHCMD("xdotool type $(grep -v '^#' ~/.safe/bookmarks | dmenu -i -l 50 | cut -d' ' -f1)") },
+    { MODKEY|ShiftMask,             XK_b,      spawn,          SHCMD("bookmarker") },
 
-    { MODKEY|ShiftMask,             XK_Insert, spawn,          SHCMD("dmenu-emoji")
+    { MODKEY|ShiftMask,             XK_Insert, spawn,          SHCMD("dmenu-emoji") },
 
 
     { MODKEY,                       XK_Tab,    view,           {0} },
@@ -283,3 +283,4 @@ static Button buttons[] = {
     { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
     { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
+

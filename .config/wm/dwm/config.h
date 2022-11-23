@@ -39,6 +39,7 @@ static const char *const autostart[] = {
     "picom", NULL,
     "flameshot", NULL,
     "redshift", NULL,
+    "dbus-run-session", "dunst", NULL,
     //"emacs", "--daemon", NULL,
     NULL /* terminate */
 };
@@ -146,7 +147,7 @@ static Key keys[] = {
     { MODKEY,                       XK_Insert, spawn,          SHCMD("xdotool type $(grep -v '^#' ~/.safe/bookmarks | dmenu -i -l 50 | cut -d' ' -f1)") },
     { MODKEY|ShiftMask,             XK_b,      spawn,          SHCMD("bookmarker") },
 
-    { MODKEY|ShiftMask,             XK_Insert, spawn,          SHCMD("dmenu-emoji") },
+    { ControlMask,                  XK_Insert, spawn,          SHCMD("dmenu-emoji") },
 
 
     { MODKEY,                       XK_Tab,    view,           {0} },

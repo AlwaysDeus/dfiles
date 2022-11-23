@@ -1,0 +1,1153 @@
+#+TITLE: Emacs Config
+:PROPERTIES:
+#+AUTHOR: VAMP
+#+STARTUP: fold
+#+PROPERTY: header-args :results silent :tangle yes :padline no
+:END:
+
+* Early-init.el
+#+BEGIN_SRC emacs-lisp :tangle ./early-init.el
+  ;;; early-init.el --- Early Init File -*- lexical-binding: t -*-
+
+  ;; Author: VAMP
+  ;; URL:
+  ;; Package-Requires: ((emacs "28.1"))
+  ;;; Commentary:
+  ;;; Code:
+
+
+  ;; Stop asking if sustom themes are safe
+  (setq custom-safe-themes t)
+  (load-theme 'modus-vivendi)
+
+  (setq frame-resize-pixelwise t)
+
+  ;; Do not resize the frame at this early stage.
+  (setq frame-inhibit-implied-resize t)
+
+
+  ;; Initialise installed packages
+  (setq package-enable-at-startup t)
+
+  (defvar package-quickstart)
+
+  ;; Allow loading from the package cache
+  (setq package-quickstart t)
+
+  ;; Disable GUI elements
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (setq inhibit-splash-screen t)
+  (setq use-dialog-box t)                 ; only for mouse events
+  (setq use-file-dialog nil)
+
+  (setq inhibit-startup-echo-area-message user-login-name) ; read the docstring
+  (setq inhibit-startup-screen t)
+  (setq inhibit-startup-buffer-menu t)
+
+  (setq native-comp-async-report-warnings-errors 'silent) ; emacs28 with native compilation
+
+  ;; Garbage Collections
+  (setq gc-cons-percentage 0.6)
+
+  ;; Compile warnings
+  ;;  (setq warning-minimum-level :emergency)
+  (setq native-comp-async-report-warnings-errors 'silent) ;; native-comp warning
+  (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+
+
+  ;; MISC OPTIMIZATIONS ----
+  ;;; optimizations (froom Doom's core.el). See that file for descriptions.
+  (setq idle-update-delay 1.0)
+  ;;; early-init.el ends here
+#+END_SRC
+
+* Init.el
+** =Begin= Init.el
+#+BEGIN_SRC emacs-lisp
+;;; init.el --- Personal configuration file -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
+
+#+END_SRC
+
+** Packages
+#+BEGIN_SRC emacs-lisp
+(dolist (path '("vamp-modules"))
+  (add-to-list 'load-path (locate-user-emacs-file path)))
+(require 'package)
+
+(setq package-archives
+      '(("elpa" . "https://elpa.gnu.org/packages/")
+        ("elpa-devel" . "https://elpa.gnu.org/devel/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa" . "https://melpa.org/packages/")))
+;; Highest number gets priority (what is not mentioned has priority 0)
+(setq package-archive-priorities
+      '(("elpa" . 2)
+        ("nongnu" . 1)))
+
+;; Keep emacs Custom-settings in separate file
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file)
+#+END_SRC
+
+** Garbage Collections/Collector
+#+BEGIN_SRC emacs-lisp
+  (use-package gcmh
+    :diminish gcmh-mode
+    :config
+    (setq gcmh-idle-delay 5
+          gcmh-high-cons-threshold (* 16 1024 1024))  ; 16mb
+    (gcmh-mode 1))
+
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (setq gc-cons-percentage 0.1))) ;; Default value for `gc-cons-percentage'
+
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (message "Emacs ready in %s with %d garbage collections."
+                       (format "%.2f seconds"
+                               (float-time
+                                (time-subtract after-init-time before-init-time)))
+                       gcs-done)))
+#+END_SRC
+
+** modules
+*** Essentials
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-essentials)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-essentials.el
+
+  ;(setq inhibit-startup-message t)
+  ;(setq inhibit-startup-screen t)
+
+  (setq gc-cons-threshold 50000000)
+  (setq large-file-warning-threshold 100000000)
+
+  ;; Remove security vulnerability
+  (eval-after-load "enriched"
+    '(defun enriched-decode-display-prop (start end &optional param)
+       (list start end)))
+
+  (require 'cl-lib)
+  ;(require 'loadhist)
+  ;(file-dependents (feature-file 'cl))
+
+  ;(require 'server)
+  ;(if (not (server-running-p)) (server-start))
+
+  (tooltip-mode -1)       ; Disable tooltip
+  (blink-cursor-mode -1)  ; Disabale cursor blinking
+
+
+  (setq visible-bell t)   ; Set the visible bell
+  (global-hl-line-mode 1) ; Hilight current line
+  ;; Show line number
+  (line-number-mode -1)
+  ;(global-display-line-numbers-mode 1)
+  ;(setq display-line-numbers-type 'normal)
+  ;(setq linum-format "%d ")
+  ;(setq display-line-numbers-type 'relative)
+
+  ;; Disable line numbers for some modes
+  (dolist (mode '(term-mode-hook
+                  eshell-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+  (column-number-mode t)
+  (size-indication-mode t)
+  (setq truncate-lines 1)  ; Disable line wrapping
+
+  (setq scroll-margin 5
+        scroll-conservatively 100000
+        scroll-preserve-screen-position 1)
+
+
+  ;; Only y/n answers
+  (setq use-short-answers t)
+
+  (global-auto-revert-mode t)
+
+  (setq-default tab-width 4
+                indent-tabs-mode nil)
+
+
+  ;; Clean white spaces
+  (add-hook 'before-save-hook 'whitespace-cleanup)
+
+  ;; Buckups
+  (setq backup-directory-alist
+        `((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+        `((".*" ,temporary-file-directory t)))
+
+  ;; All variables are for Emacs 28+
+  (setq package-name-column-width 40)
+  (setq package-version-column-width 14)
+  (setq package-status-column-width 12)
+  (setq package-archive-column-width 8)
+  (add-hook 'package-menu-mode-hook #'hl-line-mode)
+
+  ;;======================================================================================================
+  ;; KEYS
+  ;;======================================================================================================
+  ;(recentf-mode 1)
+  ; M-x recentf-open-files ; then press the number
+
+  ;; Kill current buffer
+  (global-set-key (kbd "C-x k") 'kill-this-buffer)
+
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+  (provide 'vamp-essentials)
+#+END_SRC
+
+
+; Todo: bookmarks
+*** Font
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-font)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-font.el
+(set-face-attribute 'default nil :family "JetBrains Mono")
+(set-fontset-font t 'symbol "Symbola")
+
+(use-package unicode-fonts
+   :ensure t
+   :config
+    (unicode-fonts-setup))
+
+(use-package ligature
+  :ensure t
+  :load-path "path-to-ligature-repo"
+  :config
+  ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode
+  '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>" ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!==" "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<" "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->" "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<" "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~=" "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|" "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:" ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:" "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!" "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:" "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)" "\\\\" "://"))
+  ;; Enables ligature checks globally in all buffers. You can also do
+  ;; it per mode with `ligature-mode'.
+  (global-ligature-mode t))
+
+(provide 'vamp-font)
+#+END_SRC
+
+*** Evil
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-evil)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-evil.el
+  (use-package evil
+    :ensure t
+    :init
+    (setq evil-want-integration t
+          evil-want-keybinding nil
+          evil-want-C-u-scroll t
+          evil-want-C-i-jump nil)
+    :config
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+    ;; Use visual line motions even outside of visual-line-mode buffers
+                                          ;(evil-global-set-key 'motion "j" 'evil-next-visual-line)
+                                          ;(evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+      ;;; Make evil-mode up/down operate in screen lines instead of logical lines
+    (define-key evil-motion-state-map "j" 'evil-next-visual-line)
+    (define-key evil-motion-state-map "k" 'evil-previous-visual-line)
+    ;; Also in visual mode
+    (define-key evil-visual-state-map "j" 'evil-next-visual-line)
+    (define-key evil-visual-state-map "k" 'evil-previous-visual-line)
+
+    (evil-set-initial-state 'messages-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal))
+
+  (defun rune/evil-hook ()
+    (dolist (mode '(eshell-mode
+                    git-rebase-mode
+                    erc-mod
+                    term-mode))
+      (add-to-list 'evil-emacs-state-modes mode)))
+
+  (use-package evil-collection
+    :ensure t
+    :after evil
+    :init (evil-collection-init))
+
+  (provide 'vamp-evil)
+#+END_SRC
+
+; Todo: evil-redo
+
+*** Modeline
+**** =Provide= for init.el
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-modeline)
+#+END_SRC
+
+**** Doom modeline
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-modeline.el
+  (use-package doom-modeline
+    :ensure t
+    :init (doom-modeline-mode 1)
+    :custom (setq doom-modeline-hight 10
+                  doom-modeline-time 1
+                  doom-modeline-time-icon 'nil
+                  doom-modeline-buffer-file-name-style 'truncate-nil
+                  doom-modeline-checker-simple-format 'nil))
+  (display-time-mode 1)
+  (display-battery-mode 1)
+#+END_SRC
+
+**** Nyan
+#+BEGIN_SRC emacs-lisp :tangle no
+  (use-package nyan-mode
+    :ensure t
+    :init (nyan-mode 1))
+#+END_SRC
+
+**** Hide modeline
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-modeline.el
+  (use-package hide-mode-line
+    :ensure t
+    :config
+    (global-set-key (kbd "C-M-<return>") 'hide-mode-line-mode))
+
+  ;; Diminish lets you hide minor modes from showing in the mode line,
+  ;; keeping it minimal.
+  (use-package diminish
+    :ensure t)
+#+END_SRC
+
+**** Parrot
+#+BEGIN_SRC emacs-lisp :tangle no
+  (use-package parrot
+    :config
+    (parrot-mode))
+#+END_SRC
+
+**** =Provide=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-modeline.el
+  (provide 'vamp-modeline)
+#+END_SRC
+
+*** look
+rainbow-mode, rainbow-delimiters, theme, centered-window, all-the-icons
+**** =Provide= for init.el
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-look)
+#+END_SRC
+
+**** Icons
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-look.el
+  ;; NOTE: The first time you load your configuration on a new machine,
+  ;; you'll need to run:
+  ;; M-x all-the-icons-install-fonts
+  (use-package all-the-icons
+    :ensure t)
+#+END_SRC
+
+**** Custom-set-faces
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-look.el
+  (custom-set-faces
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(fringe ((t (:background "#000000"))))
+   '(org-document-title ((t (:inherit (bold modus-themes-variable-pitch) :foreground "#c6eaff" :height 1.6))))
+   '(rainbow-delimiters-depth-1-face ((t (:foreground "red"))))
+   '(rainbow-delimiters-depth-2-face ((t (:foreground "yellow"))))
+   '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse")))))
+#+END_SRC
+
+**** Rainbow-mode -- spawn colors on colors
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-look.el
+  (use-package rainbow-mode
+    :ensure t)
+
+  (define-globalized-minor-mode global-rainbow-mode rainbow-mode
+    (lambda ()
+      (when (not (memq major-mode
+                  (list 'org-agenda-mode)))
+       (rainbow-mode 1))))
+  (global-rainbow-mode 1 )
+#+END_SRC
+
+**** Rainbow-delimiters -- colored parentheses
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-look.el
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+END_SRC
+
+**** Centered window
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-look.el
+  (use-package centered-window
+    :ensure t
+    :init (centered-window-mode t)
+    :config
+    ;; Alt-Enter toggle
+    (global-set-key (kbd "M-<RET>") 'centered-window-mode))
+  ;; Disable centered-window-mode
+  (dolist (mode '(term-mode-hook
+                  eshell-mode-hook
+                  ranger-mode-hook))
+    (add-hook mode (lambda () (centered-window-mode 0))))
+#+END_SRC
+
+**** modus-themes
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-look.el
+  (use-package modus-themes
+    :ensure t
+    :init
+    ;; Add all your customizations prior to loading the themes
+    (setq modus-themes-italic-constructs t
+          modus-themes-bold-constructs nil
+          modus-themes-region '(bg-only no-extend)
+          modus-themes-org-blocks 'tinted-background) ; {nil,'gray-background,'tinted-background}
+    :config
+    (load-theme 'modus-vivendi))
+#+END_SRC
+
+**** doom-themes
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-look.el
+  (use-package doom-themes
+    :ensure t
+    :config
+    ;; Global settings (defaults)
+    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+          doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    ;;(load-theme 'doom-outrun-electric t)  ; OG PURPLE
+    ;(load-theme 'doom-moonlight t)        ; OG Purple
+    ;; Enable flashing mode-line on errors
+    (doom-themes-visual-bell-config)
+    ;; Enable custom neotree theme (all-the-icons must be installed!)
+    ;(doom-themes-neotree-config)
+    ;; or for treemacs users
+    ;(setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+    ;(doom-themes-treemacs-config)
+    ;; Corrects (and improves) org-mode's native fontification.
+    (doom-themes-org-config))
+#+END_SRC
+
+**** =Provide=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-look.el
+  (provide 'vamp-look)
+#+END_SRC
+
+**** ?Todo: change theme colors
+*** Dashboard
+**** =Require= for init.el
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-dashboard)
+#+END_SRC
+
+**** Dashboard
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-dashboard.el
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook)
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  ;; Set the title
+  (setq dashboard-banner-logo-title "Welcome to Emacs")
+  ;; Set the banner
+  (setq dashboard-startup-banner "/home/vamp/Downloads/playboi_carti/narcissist_new.png"
+        ;dashboard-startup-banner 1
+        dashboard-center-content t
+        dashboard-image-banner-max-height 400
+        dashboard-image-banner-max-width 400
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t))
+
+;dashboard-choose-banner: Symbol’s function definition is void: image-supported-file-p
+#+END_SRC
+
+**** =Provide=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-dashboard.el
+(provide 'vamp-dashboard)
+#+END_SRC
+
+*** Completion
+**** =Require= for init.el
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-completion)
+#+END_SRC
+
+**** Ivy
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-completion.el
+(use-package ivy
+  :ensure t
+  :diminish
+  :bind (("C-s" . swiper)
+         :map ivy-minibuffer-map
+         ("TAB" . ivy-alt-done)
+         ("C-l" . ivy-alt-done)
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line)
+         :map ivy-switch-buffer-map
+         ("C-k" . ivy-previous-line)
+         ("C-l" . ivy-done)
+         ("C-d" . ivy-switch-buffer-kill))
+         ;:map ivy-reverse-i-search-kill
+         ;("C-k" . ivy-previous-line)
+         ;("C-d" . ivy-reverse-i-search-kill))
+  :config (ivy-mode 1))
+
+;(use-package ivy-rich
+;    :init
+;    (ivy-rich-mode 1))
+(require 'ivy-rich)
+(ivy-rich-mode 1)
+#+END_SRC
+
+**** Counsel
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-completion.el
+(use-package counsel
+  :ensure t
+  :bind ("C-M-j" . 'counsel-switch-buffer)
+         ;:map minibuffer-local-map
+         ;("C-r" . 'counsel-minibuffer-history))
+  :custom
+  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+  :config
+  (counsel-mode 1))
+#+END_SRC
+
+**** Company
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-completion.el
+  (use-package company
+    :ensure t
+    :diminish company-mode
+    :config
+    (setq company-idle-delay 0
+          company-minimum-prefix-length 3
+          company-selection-wrap-around t)
+    (add-hook 'after-init-hook #'global-company-mode))
+#+END_SRC
+
+**** Syntax checking
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-completion.el
+;; Syntax checking
+(use-package flycheck
+  :ensure t
+  :diminish flycheck-mode)
+  ;:config
+  ;(add-hook 'after-init-hook #'global-flycheck-mode))
+
+;; Spell checking
+(use-package flycheck-aspell
+  :ensure t)
+;; Ensure `flycheck-aspell' is available
+(require 'flycheck-aspell)
+;; If you want to check TeX/LaTeX/ConTeXt buffers
+(add-to-list 'flycheck-checkers 'tex-aspell-dynamic)
+;; If you want to check Markdown/GFM buffers
+(add-to-list 'flycheck-checkers 'markdown-aspell-dynamic)
+;; If you want to check HTML buffers
+(add-to-list 'flycheck-checkers 'html-aspell-dynamic)
+;; If you want to check XML/SGML buffers
+(add-to-list 'flycheck-checkers 'xml-aspell-dynamic)
+;; If you want to check Nroff/Troff/Groff buffers
+(add-to-list 'flycheck-checkers 'nroff-aspell-dynamic)
+;; If you want to check Texinfo buffers
+(add-to-list 'flycheck-checkers 'texinfo-aspell-dynamic)
+;; If you want to check comments and strings for C-like languages
+(add-to-list 'flycheck-checkers 'c-aspell-dynamic)
+;; If you want to check message buffers
+(add-to-list 'flycheck-checkers 'mail-aspell-dynamic)
+;; Because Aspell does not support Org syntax, the user has
+;; to define a checker with the desired flags themselves.
+(flycheck-aspell-define-checker "org"
+  "Org" ("--add-filter" "url")
+  (org-mode))
+(add-to-list 'flycheck-checkers 'org-aspell-dynamic)
+
+(setq ispell-dictionary "polish")
+(setq ispell-program-name "aspell")
+(setq ispell-silently-savep t)
+
+;You may also want to advice ispell-pdict-save to refresh flycheck when
+;inserting new entries into your local dictionary. This way highlighting
+;instantly updates when you add a previously unknown word.
+(advice-add #'ispell-pdict-save :after #'flycheck-maybe-recheck)
+(defun flycheck-maybe-recheck (_)
+  (when (bound-and-true-p flycheck-mode)
+   (flycheck-buffer)))
+
+; Cycle through different languages
+(let ((langs '("english" "polish")))
+  (setq lang-ring (make-ring (length langs)))
+  (dolist (elem langs) (ring-insert lang-ring elem)))
+
+(defun cycle-ispell-languages ()
+  (interactive)
+  (let ((lang (ring-ref lang-ring -1)))
+    (ring-insert lang-ring lang)
+    (ispell-change-dictionary lang)))
+
+(global-set-key [f6] 'cycle-ispell-languages)
+#+END_SRC
+
+**** which-key
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-completion.el
+    (use-package which-key
+      :ensure t
+      :init (which-key-mode)
+      :diminish which-key-mode
+      :config
+      (setq which-key-idle-delay 0.3
+            which-key-idle-secondary-delay 0.3)
+      (which-key-setup-side-window-bottom))
+#+END_SRC
+
+**** =Provide=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-completion.el
+(provide 'vamp-completion)
+#+END_SRC
+
+; Todo: Prots dired easy fiding
+*** Org
+**** =Require= for init.el
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-org)
+#+END_SRC
+
+**** org
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-org.el
+  (local-set-key (kbd "M-j") 'org-metadown)
+  (local-set-key (kbd "M-k") 'org-metaup)
+
+  (setq org-directory "~/death_note")
+  (setq org-agenda-files "~/death_note/agenda.org")
+  (use-package org-download
+    :ensure t
+    :custom
+    (org-download-method 'directory)
+    (org-download-image-dir "~/death_note/.img")
+    (org-download-heading-lvl 0)
+    (org-download-timestamp "org_%Y%m%d-%H%M%S_")
+    (org-image-actual-width 900)
+    (org-download-screenshot-method "xclip -selection clipboard -t image/png -o > '%s'")
+    :config
+    (require 'org-download)
+    ;; Drag-and-drop to `dired`
+    (add-hook 'dired-mode-hook 'org-download-enable))
+
+  ;; dispaly images (keybind "zi" toggle)
+  (setq org-startup-with-inline-images t)
+
+  (use-package org-auto-tangle
+    :ensure t
+    :init (setq org-auto-tangle-default t)
+    :hook (org-mode . org-auto-tangle-mode))
+
+  ;; Org hide codeblock info
+  ;(let ((background-color (face-attribute 'default :background)))
+  ;  (set-face-attribute 'org-block-begin-line nil
+  ;                      :foreground background-color
+  ;                      :background background-color))
+  ;; Org codeblock info color
+  (let ((background-color (face-attribute 'default :background)))
+    (set-face-attribute 'org-block-begin-line nil
+                        :background "#551a8b"))
+                        ;:background "#8b008b"))
+
+#+END_SRC
+
+***** Headlines
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-org.el
+ ;; Org headings
+ (use-package org-bullets
+   :ensure t
+   :after org
+   :hook (org-mode . org-bullets-mode)
+   :custom
+   (org-bullets-bullet-list '("●" "○" "●" "○" "●" "○" "●")))
+
+ ;; Org headline
+ ;https://zzamboni.org/post/beautifying-org-mode-in-emacs/
+ (set-face-attribute 'org-link nil
+                     :background nil)
+ (set-face-attribute 'org-code nil
+                     ;:foreground "#a9a1e1"
+                     :background nil)
+ (set-face-attribute 'org-date nil
+                     :background nil)
+ (set-face-attribute 'org-level-1 nil
+                     :foreground "#8a2be2"
+                     :background nil
+                     :height 1.8
+                     :weight 'normal)
+ (set-face-attribute 'org-level-2 nil
+                     :foreground "#ee7ae7"
+                     :background nil
+                     :height 1.5)
+ (set-face-attribute 'org-level-3 nil
+                     :foreground "#bf3eff"
+                     :background nil
+                     :height 1.3)
+ (set-face-attribute 'org-level-4 nil
+                     :foreground "#cd6090"
+                     :background nil
+                     :height 1.1)
+#+END_SRC
+
+***** Org-todo
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-org.el
+  ;; Types of tasks and customization
+  (setq org-todo-keywords '((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" " CANCELLED(c)"))
+        org-todo-keyword-faces
+        '(("TODO" :foreground "#ff0000" :weight normal :underline t)
+          ("WAITING" :foreground "#9f7efe" :weight normal :underline t)
+          ("IN-PROGRESS" :foreground "#551a8b" :weight normal :underline t)
+          ("DONE" :foreground "#50a14f" :weight normal :underline t)
+          ("CANCELLED" :foreground "#666666" :weight normal :underline t)))
+  ;  (setq org-todo-keywords
+  ;        '((sequence "TODO(t)" "WAITING(w)" "IN-PROGRESS(i)"  "|" "DONE(d)" "CANCELLED(c)")))
+  ;  (setq org-todo-keyword-faces
+  ;        '(("TODO" . "#ff0000") ("WAITING" . "#9f7efe") ("IN-PROGRESS" . "#551a8b") ("CANCELLED" . "#50a14f") ("DONE" . "#666666"))))
+  ;; Priority colors
+  (setq org-priority-faces
+        '((?A :foreground "#ff0000")
+          (66 :foreground "#ffa500")
+          (67 :foreground "#0098dd")
+          (68 :foreground "green")))
+  ;; Priority look
+  (use-package org-fancy-priorities
+    :ensure t
+    :hook (org-mode . org-fancy-priorities-mode)
+    :config
+    (setq org-fancy-priorities-list '("HIGH" "MID" "LOW" "OPTIONAL")))
+
+  ;;======================================================================================================
+  ;; Org-agenda
+  ;http://www.cachestocaches.com/2016/9/my-workflow-org-agenda/
+
+#+END_SRC
+
+***** Org-capture
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-org.el
+  ;; Org-capture
+  ;; Define the custum capture templates
+  (setq org-capture-templates
+         '(("t" "todo" entry (file org-default-notes-file)
+            "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
+           ("m" "Meeting" entry (file org-default-notes-file)
+            "* MEETING with %? :MEETING:\n%t" :clock-in t :clock-resume t)
+           ("d" "Diary" entry (file+datetree "~/death_note/diary.org")
+            "* %?\n%U\n" :clock-in t :clock-resume t)
+           ("i" "Idea" entry (file org-default-notes-file)
+            "* %? :IDEA: \n%t" :clock-in t :clock-resume t)
+           ("n" "Next Task" entry (file+headline org-default-notes-file "Tasks")
+            "** NEXT %? \nDEADLINE: %t")))
+  (local-set-key (kbd "C-c c") 'org-capture)
+
+  ;; Set default column view headings: Task Total-Time Time-Stamp
+  (setq org-columns-default-format "%50ITEM(Task) %10CLOCKSUM %16TIMESTAMP_IA")
+  ;Once you've included this, activate org-columns with C-c C-x C-c while on a top-level heading,
+  ;which will allow you to view the time you've spent at the different levels
+
+#+END_SRC
+
+***** Keys
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-org.el
+  ;; Move headlines using ALT j/k
+  (add-hook 'org-mode-hook
+            (lambda () (local-set-key (kbd "M-k") #'org-metaup)
+                       (local-set-key (kbd "M-j") #'org-metadown)))
+#+END_SRC
+
+***** =Provide=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-org.el
+(provide 'vamp-org)
+#+END_SRC
+
+***** Todo: org-agenda customization,
+*** File browsers
+**** =Require= for init.el
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-filebrowser)
+#+END_SRC
+
+**** Find-file
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-filebrowser.el
+
+
+#+END_SRC
+
+**** Treemacs
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-filebrowser.el
+(use-package treemacs
+  :ensure t
+  :config
+  (setq treemacs-is-never-other-window t)
+  (global-set-key (kbd "<f5>") 'treemacs)
+  (global-set-key (kbd "C-<f5>") 'treemacs-select-window))
+#+END_SRC
+
+**** Ranger
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-filebrowser.el
+(use-package ranger
+  :ensure t
+  :config
+  (global-set-key (kbd "C-<return>") 'ranger)
+  (setq ranger-show-hidden t))
+#+END_SRC
+
+**** =Provide=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-filebrowser.el
+(provide 'vamp-filebrowser)
+#+END_SRC
+
+*** Terminal
+**** =require= for init.el
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-terminal)
+#+END_SRC
+
+**** Vterm
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-terminal.el
+  (use-package vterm
+    :commands vterm
+    :config
+    (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
+    (setq vterm-shell "zsh")
+    (setq vterm-max-scrollback 10000))
+#+END_SRC
+
+**** Eshell
+***** eshell config
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-terminal.el
+  (defun vamp-configure-eshell ()
+    ;; Save command history when commands are entered
+    (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+    ;; Truncate buffer for performance
+    (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+    ;; Bindings for evil-mode
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+    (evil-normalize-keymaps)
+
+    (setq eshell-history-size 10000
+          eshell-buffer-maximum-lines 10000
+          eshell-hist-ignoredups t
+          eshell-scroll-to-bottom-on-input t))
+
+#+END_SRC
+
+***** Eshell
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-terminal.el
+  (use-package eshell-git-prompt)
+
+  (use-package eshell
+    :hook (eshell-first-time-mode . vamp-configure-eshell)
+    :config
+    (with-eval-after-load 'esh-opt
+      (setq eshell-destroy-buffer-when-proces-dies t)
+      (setq eshell-visual-commans '("htop" "zsh" "vim")))
+    (eshell-git-prompt-use-theme 'multiline2))
+#+END_SRC
+
+**** =provide=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-terminal.el
+(provide 'vamp-terminal)
+#+END_SRC
+
+*** Large files
+**** =require= for init.el
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-large_files)
+#+END_SRC
+
+**** Vlf
+https://github.com/m00natic/vlfi
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-large_files.el
+   (use-package vlf
+     :ensure t)
+   (custom-set-variables
+    '(vlf-application 'dont-ask))
+
+#+END_SRC
+
+**** =provide=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-large_files.el
+(provide 'vamp-large_files)
+#+END_SRC
+
+*** GIT
+**** =require= for init.el
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-git)
+#+END_SRC
+
+**** Magit
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-git.el
+  (use-package magit
+    :ensure t)
+#+END_SRC
+
+**** Git-gutter - changes indicator
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-git.el
+  (use-package git-gutter
+    :ensure t
+    :init (global-git-gutter-mode +1))
+#+END_SRC
+
+**** Git-timemachine
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-git.el
+  (use-package git-timemachine
+    :ensure t)
+#+END_SRC
+
+**** =provide=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-git.el
+(provide 'vamp-git)
+#+END_SRC
+
+*** Hydra
+**** =require= for init.el
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-hydra)
+#+END_SRC
+
+**** hydra
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-hydra.el
+  (use-package hydra
+    :defer t)
+
+#+END_SRC
+
+**** Hydra-winodws
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-hydra.el
+  (defun vamp/split-window-vertically-and-switch ()
+    (interactive)
+    (split-window-vertically)
+    (other-window 1))
+  (defun vamp/split-window-horizontally-and-switch ()
+    (interactive)
+    (split-window-horizontally)
+    (other-window 1))
+  ;; from https://gist.github.com/3402786
+  (defun vamp/toggle-maximize-buffer ()
+    "Maximize buffer"
+    (interactive)
+    (if (and (= 1 (length (window-list)))
+             (assoc ?_ register-alist))
+        (jump-to-register ?_)
+      (progn
+        (window-configuration-to-register ?_)
+        (delete-other-windows))))
+
+
+    ;; All-in-one window managment. Makes use of some custom functions,
+    ;; `ace-window' (for swapping), `windmove' (could probably be replaced
+    ;; by evil?) and `windresize'.
+    ;; inspired by https://github.com/jmercouris/configuration/blob/master/.emacs.d/hydra.el#L86
+    (defhydra vamp-hydra-window (:hint nil)
+     "
+    Movement      ^Split^            ^Switch^        ^Resize^
+    ----------------------------------------------------------------
+    _M-h_ <     _/_ vertical         _b_uffer       _h_  <
+    _M-j_ >     _-_ horizontal       _f_ind file    _j_ ↓
+    _M-k_ ↑      _m_aximize          _s_wap         _k_ ↑
+    _M-l_ ↓      _c_lose            _[_ backward    _l_ >
+     _q_uit      _e_qualize         _]_ forward     ^
+    ^               ^                _K_ill         ^
+    ^               ^                  ^             ^
+    "
+       ;; Movement
+       ("M-h" windmove-left)
+       ("M-j" windmove-down)
+       ("M-k" windmove-up)
+       ("M-l" windmove-right)
+
+       ;; Split/manage
+       ("-" vamp/split-window-vertically-and-switch)
+       ("/" vamp/split-window-horizontally-and-switch)
+       ("c" evil-window-delete)
+       ("d" evil-window-delete)
+       ("m" delete-other-windows)
+       ("e" balance-windows)
+
+       ;; Switch
+       ("b" counsel-switch-buffer)
+       ("f" counsel-find-file)
+       ("P" project-find-file)
+       ("s" ace-swap-window)
+       ("[" previous-buffer)
+       ("]" next-buffer)
+       ("K" kill-this-buffer)
+
+       ;; Resize
+       ("h" shrink-window-horizontally)
+       ("j" shrink-window)
+       ("k" enlarge-window)
+       ("l" enlarge-window-horizontally)
+
+       ("q" nil))
+
+#+END_SRC
+
+**** =provide=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-hydra.el
+(provide 'vamp-hydra)
+#+END_SRC
+
+*** Keys
+**** =require= for init.el
+#+BEGIN_SRC emacs-lisp
+(require 'vamp-keys)
+#+END_SRC
+
+**** General
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-keys.el
+  (add-to-list 'load-path "~/.config/emacs/packages/general")
+  (require 'general)
+
+  (general-def
+    :states '(normal visual motion)
+    :keymaps 'override)
+#+END_SRC
+
+**** SPC Leader Key
+***** SPC =start=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-keys.el
+  (general-define-key
+   :states '(normal motion visual)
+   :keymaps 'override
+   :prefix "SPC"
+
+#+END_SRC
+
+***** Buffers
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-keys.el
+  "b b"   '(ibuffer :which-key "Ibuffer")
+  "b c"   '(clone-indirect-buffer-other-window :which-key "Clone indirect buffer other window")
+  "b k"   '(kill-current-buffer :which-key "Kill current buffer")
+  "b n"   '(next-buffer :which-key "Next buffer")
+  "b p"   '(previous-buffer :which-key "Previous buffer")
+  "b B"   '(ibuffer-list-buffers :which-key "Ibuffer list buffers")
+  "b K"   '(kill-buffer :which-key "Kill buffer")
+
+#+END_SRC
+
+***** Hydra
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-keys.el
+   "a" '(nil :which-key "hydras")
+   "aw" '(vamp-hydra-window/body :which-key "window control")
+
+#+END_SRC
+
+***** Help
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-keys.el
+  "h" '(nil :which-key "help/emacs")
+
+  "hv" '(counsel-describe-variable :which-key "des. variable")
+  "hb" '(counsel-descbinds :which-key "des. bindings")
+  "hM" '(describe-mode :which-key "des. mode")
+  "hf" '(counsel-describe-function :which-key "des. func")
+  "hF" '(counsel-describe-face :which-key "des. face")
+  "hk" '(describe-key :which-key "des. key")
+
+  "hed" '((lambda () (interactive) (jump-to-register 67)) :which-key "edit dotfile")
+
+  "hm" '(nil :which-key "switch mode")
+  "hme" '(emacs-lisp-mode :which-key "elisp mode")
+  "hmo" '(org-mode :which-key "org mode")
+  "hmt" '(text-mode :which-key "text mode")
+
+  "hp" '(nil :which-key "packages")
+  "hpr" '(package-refresh-contents :which-key "regresh packages database")
+  "hpi" '(package-install :which-key "install package")
+  "hpd" '(package-delete :which-key "delete package")
+#+END_SRC
+
+***** Window
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-keys.el
+   "w" '(nil :which-key "window")
+   "wm" '(vamp/toggle-maximize-buffer :which-key "maximize buffer")
+   "wN" '(make-frame :which-key "make frame")
+   "wd" '(evil-window-delete :which-key "delete window")
+   "w-" '(vamp/split-window-vertically-and-switch :which-key "split below")
+   "w/" '(vamp/split-window-horizontally-and-switch :which-key "split right")
+   "wr" '(vamp-hydra-window/body :which-key "hydra window")
+   "wl" '(evil-window-right :which-key "evil-window-right")
+   "wh" '(evil-window-left :which-key "evil-window-left")
+   "wj" '(evil-window-down :which-key "evil-window-down")
+   "wk" '(evil-window-up :which-key "evil-window-up")
+   "wz" '(text-scale-adjust :which-key "text zoom")
+
+#+END_SRC
+
+***** Org
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-keys.el
+  "o"   '(nil :which-key "Org")
+  "oii" '(org-download-clipboard :which-key "img form clipboard")
+#+END_SRC
+
+***** Toggle
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-keys.el
+  "t" '(nil :which-key "toggles")
+  "tt" '(toggle-truncate-lines :which-key "truncate lines")
+  "tv" '(visual-line-mode :which-key "visual line mode")
+  "tn" '(display-line-numbers-mode :which-key "display line numbers")
+  "ta" '(mixed-pitch-mode :which-key "variable pitch mode")
+  "tc" '(visual-fill-column-mode :which-key "visual fill column mode")
+  "ty" '(counsel-load-theme :which-key "load theme")
+  "tw" '(centered-window-mode :which-key "writeroom-mode")
+  "tR" '(read-only-mode :which-key "read only mode")
+  "tI" '(toggle-input-method :which-key "toggle input method")
+  "tr" '(display-fill-column-indicator-mode :which-key "fill column indicator")
+  "tm" '(hide-mode-line-mode :which-key "hide modeline mode")
+  "te" '(org-hide-emphasis-markers :which-key "hide emphasis markup")
+
+#+END_SRC
+
+***** File browsers
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-keys.el
+   "f" '(nil :which-key "file browser")
+   "ff" '(find-file :which-key "file browser")
+   "fd" '(dired :which-key "file browser")
+   "fr" '(ranger :which-key "file browser")
+   "ft" '(treemacs :which-key "file browser")
+#+END_SRC
+
+***** SPC =end=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-keys.el
+   ) ;; End SPC prefix block
+#+END_SRC
+
+**** =provide=
+#+BEGIN_SRC emacs-lisp :tangle ./vamp-modules/vamp-keys.el
+  (provide 'vamp-keys)
+#+END_SRC
+
+*** TODO
+;; SCHOOL
+;(require 'vamp-school)
+    ;https://libreddit.dcs0.hu/r/emacs/comments/jkbvb5/equations_in_emacs/
+    ;https://lifeofpenguin.blogspot.com/2021/11/formula-editor-in-gnu-emacs.html
+;Circuits
+;http://tiagoweber.github.io/blog/entry1.html
+;Drawing
+    ;https://github.com/misohena/el-easydraw
+    ;https://lifeofpenguin.blogspot.com/2021/08/scribble-notes-in-gnu-emacs.html
+
+    ;http://127.0.0.1:9010/https://www.youtube.com/playlist?list=PLW9poAEUvGDDxCZX-3xIQ3Wb1HOVcg7N_
+;Artist mode
+    ;http://127.0.0.1:9010/https://www.youtube.com/watch?v=cIuX87Xo8Fc
+
+;(require 'vamp-rss)
+** =End= Init.el
+#+BEGIN_SRC emacs-lisp
+  ;;; init.el ends here
+#+END_SRC

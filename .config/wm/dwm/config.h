@@ -105,7 +105,7 @@ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont,
 static const char *roficmd[] = { "rofi", "-show", "combi", NULL };
 static const char *termcmd[]  = { "alacritty", "-e", "/bin/zsh", NULL };
 static const char scratchpadname[] = "scratchpad";
-static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "69x13", "-e", "/bin/zsh", NULL };
+static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "80x13", "-e", "/bin/zsh", NULL };
 
 #include "movestack.c"
 #include <X11/XF86keysym.h>

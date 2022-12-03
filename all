@@ -1,0 +1,78 @@
+sys-boot/grub:2 device-mapper
+media-video/pipewire sound-server
+dev-ruby/asciidoctor ruby30
+www-client/w3m imlib
+sys-process/htop lm-sensors
+x11-misc/picom-jonaburg opengl
+sys-apps/flatpak X policykit seccomp
+media-video/pipewire flatpak echo-cancel dbus gstreamer udev v4l
+app-editors/emacs dynamic-loading gif gui imagemagick jit jpeg lcms png source svg harfbuzz xft games sound libxml2
+app-emacs/emacs-common gui games
+sys-devel/gcc jit
+net-vpn/tor caps doc lzma man scrypt seccomp tor-hardening verify-sig zstd
+# required by torbrowser
+x11-libs/gtk+ wayland
+net-analyzer/wireshark capinfos captype dftest dumpcap editcap filecaps gui mergecap minizip netlink pcap plugins randpkt randpktdump reordercap sharkd ssl text2pcap tshark udpdump zlib zstd libxml2 maxminddb smi sshdump tfshark wifi
+app-emulation/libvirt wireshark-plugins policykit pcap parted qemu virtualbox
+app-emulation/qemu spice usb usbredir spice pulseaudio
+app-emulation/virt-manager gui policykit
+app-emulation/virtualbox pulseaudio dtrace python
+media-gfx/imv freeimage gif heif icu jpeg png svg tiff
+#===============================================================================
+# required by www-client/qutebrowser-2.5.2::gentoo
+# required by qutebrowser (argument)
+>=dev-qt/qtcore-5.15.5-r3 icu
+# required by dev-python/PyQtWebEngine-5.15.5::gentoo
+# required by www-client/qutebrowser-2.5.2::gentoo[python_single_target_python3_10]
+# required by qutebrowser (argument)
+>=dev-python/PyQt5-5.15.7 printsupport sql multimedia declarative widgets network gui opengl webchannel
+# required by dev-python/PyQtWebEngine-5.15.5::gentoo
+# required by www-client/qutebrowser-2.5.2::gentoo[python_single_target_python3_10]
+# required by qutebrowser (argument)
+>=dev-qt/qtwebengine-5.15.5_p20220618 widgets
+# required by dev-qt/qtwebengine-5.15.5_p20220618::gentoo
+# required by dev-python/PyQtWebEngine-5.15.5::gentoo
+# required by www-client/qutebrowser-2.5.2::gentoo[python_single_target_python3_10]
+# required by qutebrowser (argument)
+>=dev-libs/libxml2-2.10.3 icu
+# required by dev-qt/qtwebengine-5.15.5_p20220618::gentoo
+# required by dev-python/PyQtWebEngine-5.15.5::gentoo
+# required by www-client/qutebrowser-2.5.2::gentoo[python_single_target_python3_10]
+# required by qutebrowser (argument)
+>=dev-qt/qtwebchannel-5.15.5 qml
+# required by dev-qt/qtwebengine-5.15.5_p20220618::gentoo
+# required by dev-python/PyQtWebEngine-5.15.5::gentoo
+# required by www-client/qutebrowser-2.5.2::gentoo[python_single_target_python3_10]
+# required by qutebrowser (argument)
+>=sys-libs/zlib-1.2.13-r1 minizip
+# required by dev-python/PyQt5-5.15.7::gentoo[multimedia]
+# required by dev-python/PyQtWebEngine-5.15.5::gentoo
+# required by www-client/qutebrowser-2.5.2::gentoo[python_single_target_python3_10]
+# required by qutebrowser (argument)
+>=dev-qt/qtmultimedia-5.15.5-r1 widgets
+# required by net-print/cups-filters-1.28.16-r1::gentoo[postscript]
+# required by net-print/cups-2.4.2-r6::gentoo
+# required by net-im/discord-bin-0.0.21-r1::gentoo
+# required by discord-bin (argument)
+>=app-text/ghostscript-gpl-10.0.0-r1 cups
+# required by x11-misc/xdg-utils-1.1.3_p20210805::gentoo
+# required by net-print/cups-2.4.2-r6::gentoo[X]
+# required by app-text/ghostscript-gpl-10.0.0-r1::gentoo[cups]
+# required by net-print/cups-filters-1.28.16-r1::gentoo[postscript]
+>=app-text/xmlto-0.0.28-r9 text
+# required by x11-libs/gtk+-3.24.34-r1::gentoo[wayland]
+# required by gtk+ (argument)
+>=media-libs/mesa-22.2.3 wayland
+# required by app-emulation/libvirt-8.9.0::gentoo[virt-network]
+# required by app-emulation/libvirt-glib-4.0.0::gentoo
+# required by app-emulation/virt-manager-4.1.0::gentoo[-test]
+# required by virt-manager (argument)
+>=net-dns/dnsmasq-2.87 script
+# required by app-emulation/virt-manager-4.1.0::gentoo[gui,-test]
+# required by virt-manager (argument)
+>=net-misc/spice-gtk-0.41 usbredir
+# required by app-emulation/libvirt-8.9.0::gentoo[parted]
+# required by app-emulation/libvirt-glib-4.0.0::gentoo
+# required by app-emulation/virt-manager-4.1.0::gentoo[-test]
+# required by virt-manager (argument)
+>=sys-block/parted-3.5 device-mapper

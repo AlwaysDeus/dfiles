@@ -45,6 +45,8 @@ alias ip="ip -color=auto"
 alias c="xclip -selection clipboard"
 alias dempty="find . -type f -empty -print -delete"
 alias image="feh"
+alias ani-cli="~/tools/ani-cli/ani-cli"
+alias vimv="~/tools/vimv/vimv"
 #}}}
 ## text editors {{{
 alias sv="sudoedit"
